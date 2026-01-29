@@ -113,8 +113,10 @@ function verilate() {
 }
 
 function library() {
+    RULE="libV${NAME}"
+
     log "Building simulation library..."
-    make -C "$BUILD_DIR" -f V${NAME}.mk libV${NAME}
+    make -C "$BUILD_DIR" -f V${NAME}.mk $RULE
     followup_log "Simulation library built."
     lnbreak
 }
