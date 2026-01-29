@@ -1,9 +1,16 @@
 module cpu_2601 (
-    /* verilator lint_off UNUSED */
     input  logic clk,
     input  logic rst
-    /* verilator lint_on UNUSED */
 );
 
+    logic [31:0] tick;
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            tick <= 32'd0;
+        end else begin
+            tick <= tick + 32'd1;
+        end
+    end
 
 endmodule
