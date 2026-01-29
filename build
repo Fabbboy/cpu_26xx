@@ -1,0 +1,111 @@
+#!/usr/bin/bash
+
+NAME="cpu_2601"
+VLANG="sv"
+CXXLANG="cpp"
+
+OPERATION="${1:-build}" # build | clean
+
+## DIRECTORIES
+CWD=$(pwd)
+VERILATOR_ROOT="${2:-/usr/share/verilator}"
+
+RTL_DIR="$CWD/rtl"
+BUILD_DIR="$CWD/builddir"
+VERILATOR_INCLUDE="$VERILATOR_ROOT/include"
+VERILATOR_BIN="$VERILATOR_ROOT/bin"
+
+## BINS
+CXX="${3:-g++}"
+FIND="${4:-find}"
+VERILATOR="${VERILATOR_BIN}/verilator"
+
+## FLAGS
+VERILATOR_FLAGS="-I$RTL_DIR --Mdir $BUILD_DIR --cc"
+CXX_FLAGS="-std=c++11 -I$VERILATOR_INCLUDE -I$RTL_DIR -O3"
+
+## FILES
+TOP="$RTL_DIR/$NAME.$VLANG"
+SIM="$CWD/$NAME.$CXXLANG"
+
+
+## HELPERS
+function check_dir() {
+    if [ ! -d "$1" ]; then
+       return 1
+    fi
+
+    return 0
+}
+
+function mkdir_if_not() {
+    if check_dir "$1"; then
+        return
+    fi
+
+    mkdir -p "$1"
+}
+
+function raise() {
+    echo "ERROR: $1"
+    exit 1
+}
+
+function log() {
+    echo "LOG: $1"
+}
+
+function followup_log() {
+    echo "--> $1"
+}
+
+function lnbreak() {
+    echo ""
+}
+
+## BUILD
+
+function prepare() {
+   log "Checking Verilator root directory..."
+    if ! check_dir "$VERILATOR_ROOT"; then
+        raise "Verilator root directory '$VERILATOR_ROOT' does not exist"
+    fi
+    followup_log "Verilator root directory exists."
+    lnbreak
+
+    log "Creating build directory..."
+    mkdir_if_not "$BUILD_DIR"
+    followup_log "Build directory created."
+    lnbreak
+}
+
+function configuration() {
+    log "Configuration:"
+    log "  CWD: $CWD"
+    log "  VERILATOR_ROOT: $VERILATOR_ROOT"
+    log "  RTL_DIR: $RTL_DIR"
+    log "  BUILD_DIR: $BUILD_DIR"
+    log "  CXX: $CXX"
+    log "  FIND: $FIND"
+    log "  VERILATOR: $VERILATOR"
+    log "  TOP: $TOP"
+    log "  SIM: $SIM"
+    lnbreak
+}
+
+function build() {
+    configuration
+    prepare
+}
+
+## OPERATION
+if [ "$OPERATION" == "build" ]; then
+    build
+elif [ "$OPERATION" == "clean" ]; then
+    log "Cleaning build directory..."
+    rm -rf "$BUILD_DIR"
+    followup_log "Build directory cleaned."
+    lnbreak
+else
+    raise "Unknown operation '$OPERATION'"
+fi
