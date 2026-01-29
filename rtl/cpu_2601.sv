@@ -1,16 +1,14 @@
 module cpu_2601 (
     input  logic clk,
-    input  logic rst
+    input  logic rst,
+    output logic alive
 );
 
-    logic [31:0] tick;
-
     always_ff @(posedge clk) begin
-        if (rst) begin
-            tick <= 32'd0;
-        end else begin
-            tick <= tick + 32'd1;
-        end
+        if (rst)
+            alive <= 1'b0;
+        else
+            alive <= ~alive;
     end
 
 endmodule
