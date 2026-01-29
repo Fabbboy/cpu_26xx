@@ -22,11 +22,6 @@ Notes:
 - The script accepts optional overrides for Verilator root and toolchain binaries. See `build` for argument order.
 - Keep generated outputs in `builddir/` only.
 
-### Manual Verilator (Fallback)
-Only use direct Verilator commands if the build script cannot be used.
-- `verilator --cc rtl/cpu_2601.sv --exe cpu_2601.cpp --Mdir builddir`
-- `make -C builddir -f Vcpu_2601.mk`
-
 ### Lint
 There is no repository-wide lint config. Use Verilator lint for RTL:
 - `verilator --lint-only -Wall rtl/cpu_2601.sv`
