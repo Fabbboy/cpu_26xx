@@ -17,9 +17,10 @@ VERILATOR_BIN="$VERILATOR_ROOT/bin"
 
 ## BINS
 CXX="${3:-g++}"
-FIND="${4:-find}"
-RM="${5:-rm}"
-MKDIR="${6:-mkdir}"
+MAKE="${4:-make}"
+FIND="${5:-find}"
+RM="${6:-rm}"
+MKDIR="${7:-mkdir}"
 
 VERILATOR="${VERILATOR_BIN}/verilator"
 
@@ -104,8 +105,24 @@ function configuration() {
     lnbreak
 }
 
+function verilate() {
+    log "Starting Verilation..."
+    $VERILATOR $VERILATOR_FLAGS $TOP
+    followup_log "Verilation completed."
+    lnbreak
+}
+
+function library() {
+    log "Building simulation library..."
+    make -C "$BUILD_DIR" -f V${NAME}.mk V${NAME}
+    followup_log "Simulation library built."
+    lnbreak
+}
+
 function build() {
     prepare
+    verilate
+    library
 }
 
 function clean() {
