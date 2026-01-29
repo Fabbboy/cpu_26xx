@@ -41,6 +41,79 @@ There is no test framework or testbench in this repo.
 - Do not hand-edit files like `Vcpu_2601.mk`, `Vcpu_2601*.cpp`, or `Vcpu_2601*.h`.
 - Regenerate instead of editing generated files.
 
+## Build Script Style Guidelines
+
+### General Structure
+- Use `#!/usr/bin/bash` shebang.
+- Enable fail-fast behavior with `set -e` at the top.
+- Organize code with `##` section headers: DIRECTORIES, BINS, FLAGS, FILES, HELPERS, BUILD, OPERATION.
+- Place main execution logic at the bottom of the script.
+
+### Naming Conventions
+- **Variables**: `UPPER_SNAKE_CASE` for all constants and configuration.
+  - Use semantic suffixes: `_DIR`, `_ROOT`, `_FLAGS`, `_BIN`, `_NAME`, `_OUT`.
+  - Use prefixes to group related variables: `TOP_*`, `SIM_*`, `VERILATOR_*`.
+- **Functions**: `snake_case` (lowercase with underscores).
+  - Use verbs or verb phrases describing the action.
+
+### Variable Usage
+- Always quote variables: `"$VAR"`.
+- Use parameter expansion for defaults: `${N:-default}`.
+- Define all variables at the top in organized sections before functions.
+- Build complex values through composition: `TOP_OUT_ALL="$BUILD_DIR/$TOP_OUT_ALL_NAME"`.
+- No inline literal values; everything goes through a named variable, even tool binaries.
+
+### Path Building
+- Start with base paths: `CWD=$(pwd)`, `VERILATOR_ROOT`.
+- Build derived paths using concatenation: `"$BASE/subdir"`.
+- All paths constructed from variables, no hardcoded paths.
+- Maintain hierarchical structure: derived paths depend on base paths.
+
+### Flag Management
+- **Complex flags in variables**: Define all tool flags in the FLAGS section at top.
+  - Example: `VERILATOR_FLAGS="-I$RTL_DIR --Mdir $BUILD_DIR --cc"`
+  - Example: `CXX_FLAGS="-std=c++17 -I$VERILATOR_INCLUDE -I$BUILD_DIR -O3"`
+- **Minimal structural flags inline**: Only simple syntax flags like `-f`, `-C`, `-o` allowed inline.
+- Rationale: Keeps configuration centralized and functions focused on workflow, not settings.
+
+### Functions
+- Use `function` keyword: `function name() {`.
+- Opening brace on same line as function declaration.
+- Use explicit returns: `return 0` for success, `return 1` for failure.
+- Single responsibility: each function does one clear thing.
+
+### Indentation and Formatting
+- Indentation: 4 spaces (not tabs).
+- Blank lines between function definitions.
+
+### Quoting and Safety
+- Quote all variable expansions: `"$VAR"`.
+- Quote all path variables to handle spaces.
+
+### Error Handling and Logging
+- Use custom `raise` function for errors with descriptive messages.
+- Consistent logging pattern:
+  - `log` for primary messages.
+  - `followup_log` (with `-->` prefix) for sub-messages.
+  - `lnbreak` for blank lines instead of raw `echo ""`.
+
+### Conditionals
+- Use `[ ... ]` test syntax with proper spacing.
+- Use `==` for string comparison.
+- Check conditions with helper functions (e.g., `check_dir`).
+
+### Comment Usage
+- **Section headers only**: Use `## SECTION_NAME` to organize code blocks.
+- **Minimal inline comments**: Only where absolutely necessary (e.g., documenting argument options).
+- **Self-documenting code**: Choose function and variable names that eliminate the need for comments.
+- **No function documentation blocks**: The name says it all.
+- **No implementation comments**: Code inside functions should have zero comments.
+- Philosophy: clear names eliminate the need for comments.
+
+### Helper Philosophy
+- Extract repeated logic into helper functions.
+- Keep helpers at the top, main build logic functions in the middle, execution at bottom.
+
 ## SystemVerilog Style Guidelines
 
 ### General
