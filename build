@@ -105,7 +105,6 @@ function configuration() {
 }
 
 function build() {
-    configuration
     prepare
 }
 
@@ -116,6 +115,7 @@ function clean() {
 }
 
 ## OPERATION
+configuration
 if [ "$OPERATION" == "build" ]; then
     build
 elif [ "$OPERATION" == "clean" ]; then
