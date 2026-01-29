@@ -1,11 +1,14 @@
-#include "cpu_2601_.h"
+#include "Vcpu_2601.h"
 #include "verilated.h"
 
 int main(int argc, char *argv[]) {
   Verilated::commandArgs(argc, argv);
 
-  cpu_2601_ *top = new cpu_2601_();
-
+  Vcpu_2601 *top = new Vcpu_2601;
+  while (!Verilated::gotFinish()) {
+    top->clk = !top->clk;
+    top->eval();
+  }
   delete top;
   return 0;
 }
