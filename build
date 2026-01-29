@@ -18,6 +18,9 @@ VERILATOR_BIN="$VERILATOR_ROOT/bin"
 ## BINS
 CXX="${3:-g++}"
 FIND="${4:-find}"
+RM="${5:-rm}"
+MKDIR="${6:-mkdir}"
+
 VERILATOR="${VERILATOR_BIN}/verilator"
 
 ## FLAGS
@@ -43,7 +46,15 @@ function mkdir_if_not() {
         return
     fi
 
-    mkdir -p "$1"
+    $MKDIR "$1"
+}
+
+function rm_if() {
+    if ! check_dir "$1"; then
+        return
+    fi
+
+    $RM -r "$1"
 }
 
 function raise() {
@@ -98,14 +109,17 @@ function build() {
     prepare
 }
 
+function clean() {
+    log "Cleaning build directory..."
+    rm_if "$BUILD_DIR"
+    followup_log "Build directory cleaned."
+}
+
 ## OPERATION
 if [ "$OPERATION" == "build" ]; then
     build
 elif [ "$OPERATION" == "clean" ]; then
-    log "Cleaning build directory..."
-    rm -rf "$BUILD_DIR"
-    followup_log "Build directory cleaned."
-    lnbreak
+    clean
 else
     raise "Unknown operation '$OPERATION'"
 fi
