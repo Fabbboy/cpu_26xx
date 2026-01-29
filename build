@@ -26,12 +26,18 @@ VERILATOR="${VERILATOR_BIN}/verilator"
 
 ## FLAGS
 VERILATOR_FLAGS="-I$RTL_DIR --Mdir $BUILD_DIR --cc"
-CXX_FLAGS="-std=c++11 -I$VERILATOR_INCLUDE -I$RTL_DIR -O3"
+CXX_FLAGS="-std=c++11 -I$VERILATOR_INCLUDE -I$BUILD_DIR -O3"
 
 ## FILES
-TOP="$RTL_DIR/$NAME.$VLANG"
-SIM="$CWD/$NAME.$CXXLANG"
+TOP_OUT_ALL_NAME="libV${NAME}__ALL.a"
+TOP_OUT_VERILATED_NAME="libverilated.a"
 
+TOP="$RTL_DIR/$NAME.$VLANG"
+TOP_OUT_ALL="$BUILD_DIR/$TOP_OUT_ALL_NAME"
+TOP_OUT_VERILATED="$BUILD_DIR/$TOP_OUT_VERILATED_NAME"
+
+SIM="$CWD/$NAME.$CXXLANG"
+SIM_OUT="$BUILD_DIR/$NAME"
 
 ## HELPERS
 function check_dir() {
@@ -113,11 +119,16 @@ function verilate() {
 }
 
 function library() {
-    RULE="libV${NAME}"
-
     log "Building simulation library..."
-    make -C "$BUILD_DIR" -f V${NAME}.mk $RULE
+    make -C "$BUILD_DIR" -f V${NAME}.mk $TOP_OUT_ALL_NAME $TOP_OUT_VERILATED_NAME
     followup_log "Simulation library built."
+    lnbreak
+}
+
+function simulation() {
+    log "Building simulation executable..."
+    $CXX $CXX_FLAGS -o "$SIM_OUT" "$SIM" "$TOP_OUT_ALL" "$TOP_OUT_VERILATED"
+    followup_log "Simulation executable built."
     lnbreak
 }
 
@@ -125,6 +136,7 @@ function build() {
     prepare
     verilate
     library
+    simulation
 }
 
 function clean() {
