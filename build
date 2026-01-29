@@ -105,6 +105,7 @@ function configuration() {
     log "  RTL_DIR: $RTL_DIR"
     log "  BUILD_DIR: $BUILD_DIR"
     log "  CXX: $CXX"
+    log "  MAKE: $MAKE"
     log "  FIND: $FIND"
     log "  VERILATOR: $VERILATOR"
     log "  TOP: $TOP"
