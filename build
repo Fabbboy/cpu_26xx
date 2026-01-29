@@ -114,7 +114,7 @@ function verilate() {
 
 function library() {
     log "Building simulation library..."
-    make -C "$BUILD_DIR" -f V${NAME}.mk V${NAME}
+    make -C "$BUILD_DIR" -f V${NAME}.mk libV${NAME}
     followup_log "Simulation library built."
     lnbreak
 }
